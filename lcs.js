@@ -1,0 +1,2 @@
+const args=process.argv.slice(2);if(0===args.length)console.log("");
+else{const a=args.reduce((e,s)=>s.length<e.length?s:e,args[0]);let l="";for(let s=a.length;0<s;s--){for(let e=0;e<=a.length-s;e++){const g=a.substr(e,s);if(args.every(e=>e.includes(g))){l=g;break}}if(""!==l)break}console.log(l)}
