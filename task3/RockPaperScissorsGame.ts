@@ -1,63 +1,9 @@
-import * as crypto from "crypto";
 import * as readline from "readline";
+import HMACGenerator from './HMACGenerator';
+import SecretKeyGenerator from "./SecretKeyGenerator";
+import GameRules from "./GameRules";
 
-//1. Create key and hmac generator
-
-class HMACGenerator {
-    generateHMAC(key: Buffer, value: string): string {
-        return crypto.createHmac("sha3-256", key).update(value).digest("hex");
-    }
-}
-
-class SecretKeyGenerator {
-    generateRandomKey(): Buffer {
-        return crypto.randomBytes(32);
-    }
-}
-
-//2. Build rules of game
-
-class GameRules {
-    private moves: string[];
-
-    constructor(moves: string[]) {
-        this.moves = moves;
-    }
-
-    findWinner(playerMove: number, computerMove: number): string {
-        const half = (this.moves.length - 1) / 2;
-        if (computerMove === playerMove) {
-            return "Draw!";
-        }
-        if (
-            (computerMove - playerMove + this.moves.length) % this.moves.length <= half
-        ) {
-            return "Lose!";
-        } else {
-            return "Win!";
-        }
-    }
-
-    displayTable(): string[][] {
-        const table: string[][] = [];
-        table.push(["*", ...this.moves]);
-
-        for (let i = 0; i < this.moves.length; i++) {
-            const row: string[] = [];
-            row.push(this.moves[i]);
-            for (let j = 0; j < this.moves.length; j++) {
-                const result = this.findWinner(i + 1, j + 1);
-                row.push(result.charAt(0).toUpperCase());
-            }
-            table.push(row);
-        }
-
-        return table;
-    }
-}
-
-// Build game class and its logic
-class RockPaperScissorsGame {
+export default class RockPaperScissorsGame {
     private key: Buffer;
     private moves: string[];
     private hmacCalculator: HMACGenerator;
@@ -133,17 +79,3 @@ class RockPaperScissorsGame {
       }
     }
   }
-  
-  function main(): void {
-    const args = process.argv.slice(2);
-  
-    if (args.length < 3 || args.length % 2 !== 1 || new Set(args).size !== args.length) {
-      console.error('Invalid inputs. Please provide an odd number of non-repeating strings.\nExample: node index.js rock paper scissors lizard Spock');
-      process.exit(1);
-    }
-  
-    const game = new RockPaperScissorsGame(args);
-    game.start();
-  }
-  
-  main();
