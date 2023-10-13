@@ -4,13 +4,15 @@ import axios from "axios";
 interface SignUpFormState{
     name: string;
     email: string;
+    password: string;
 }
 
 const SignUpForm = () => {
 
     const [formData, setFormData] = useState<SignUpFormState>({
         name: '',
-        email: ''
+        email: '',
+        password: '',
     })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,7 +26,7 @@ const SignUpForm = () => {
         
         
         try {
-            const response = axios.post('http://localhost:8000/api/v1/signup', formData)
+            const response = axios.post('http://localhost:3000/signup', formData)
             console.log(response);
             
         } catch (error){
@@ -40,6 +42,7 @@ const SignUpForm = () => {
 
             <input type="email" name="email" onChange={handleChange} value={formData.email} required maxLength={50}/>
 
+            <input type="password" name="password" onChange={handleChange} value={formData.password} required maxLength={50}/>
             <button type="submit" >Submit</button>
         </form>
     </>
