@@ -2,9 +2,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const auth = require('./auth')
 const dbConnect = require('./dbConnect');
 const User = require('./models/User');
+require('dotenv').config();
 
+const SECRET_TOKEN_KEY = process.env.SECRET_TOKEN_KEY
 
 const app = express();
 
@@ -14,7 +18,6 @@ app.use(bodyParser.json());
 dbConnect();
 
 // Use the signup routes
-
 
 app.post("/api/v1/signup", async (req, res) => {
 
@@ -50,6 +53,7 @@ app.post("/api/v1/signup", async (req, res) => {
     }) 
 } )
 
+//Handling login endpoint
 app.post('/api/v1/login', async (req, res) => {
     const {email, password} = req.body;
 
@@ -64,10 +68,20 @@ app.post('/api/v1/login', async (req, res) => {
                     message: "Password doesn't match"
                 })
             }
+
+            //Generating token for authentication valid for a day
+            const token = jwt.sign({
+                userId: user._id,
+                userEmail: user.email
+            },  SECRET_TOKEN_KEY,
+                {expiresIn: '24h'}
+            )
+
             res.status(200).send({
                 message: "Login successful!",
                 email: user.email,
-                name: user.name
+                name: user.name,
+                token
             })
         })
     })
@@ -81,6 +95,20 @@ app.post('/api/v1/login', async (req, res) => {
     
 })
 
+app.get('/users', auth,  (req, res) => {
+    // User.find()
+    // .then((users) => {
+    //     res.status(200).send(users)
+    // })
+    // .catch((err) => {
+    //     res.status(500).send({
+    //         message: "Error: ",
+    //         err
+    //     })
+    // })
+
+    res.json({ message: "You are authorized to access me" });
+})
 
 // Start the server
 
@@ -89,4 +117,3 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)
 })
-
