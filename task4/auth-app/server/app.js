@@ -35,8 +35,13 @@ app.post("/api/v1/signup", async (req, res) => {
 
     //hash the password coming from api
     const hashedPassword = await bcrypt.hash(password, 10)
-    
-    const newUser = new User({name, email, password: hashedPassword})
+
+    //Registered and login time
+    const registeredAt = Date.now();
+    const lastLoginTime = Date.now();
+
+    //Creating User object and add all properties into this object
+    const newUser = new User({name, email, password: hashedPassword, registeredAt, lastLoginTime})
 
     newUser.save()
     .then((result) => {
@@ -57,8 +62,13 @@ app.post("/api/v1/signup", async (req, res) => {
 app.post('/api/v1/login', async (req, res) => {
     const {email, password} = req.body;
 
-    User.findOne({
+    const loginTime = Date.now();
+
+    User.findOneAndUpdate({
         email: email
+    }, 
+    {
+        lastLoginTime: loginTime
     })
     .then((user) => {
         bcrypt.compare(password, user.password)
@@ -68,6 +78,8 @@ app.post('/api/v1/login', async (req, res) => {
                     message: "Password doesn't match"
                 })
             }
+
+            //Keeps the datetime of last login
 
             //Generating token for authentication valid for a day
             const token = jwt.sign({
@@ -85,7 +97,6 @@ app.post('/api/v1/login', async (req, res) => {
             })
         })
     })
-    
     .catch((err) => {
         res.status(400).send({
             message: "User with this email is not registered!",
@@ -95,19 +106,26 @@ app.post('/api/v1/login', async (req, res) => {
     
 })
 
-app.get('/users', auth,  (req, res) => {
-    // User.find()
-    // .then((users) => {
-    //     res.status(200).send(users)
-    // })
-    // .catch((err) => {
-    //     res.status(500).send({
-    //         message: "Error: ",
-    //         err
-    //     })
-    // })
-
-    res.json({ message: "You are authorized to access me" });
+app.get('/api/v1/users', auth,  (req, res) => {
+    User.find()
+    .then((users) => {
+        const usersList = users.map(user => {
+            return {
+                name: user.name,
+                email: user.email,
+                lastLoginTime: user.lastLoginTime,
+                registeredAt: user.registeredAt,
+                status: user.status
+            }
+        })
+        res.status(200).json(usersList)
+    })
+    .catch((err) => {
+        res.status(500).send({
+            message: "Error: ",
+            err
+        })
+    })
 })
 
 // Start the server
