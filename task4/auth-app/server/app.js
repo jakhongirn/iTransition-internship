@@ -1,5 +1,4 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -16,6 +15,20 @@ app.use(bodyParser.json());
 
 //connection of MongoDB remotely
 dbConnect();
+
+// Handle CORS rules
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+    );
+    next();
+  });
 
 // Use the signup routes
 
@@ -52,8 +65,7 @@ app.post("/api/v1/signup", async (req, res) => {
         .save()
         .then((result) => {
             res.status(201).send({
-                message: "User created successfully!",
-                result,
+                message: "User created successfully!"
             });
         })
         .catch((err) => {
@@ -183,7 +195,6 @@ app.delete("/api/v1/users/delete", (req, res) => {
 });
 
 // Start the server
-
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
