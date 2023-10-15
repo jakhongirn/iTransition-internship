@@ -165,6 +165,23 @@ app.post("/api/v1/users/updateMany/", auth, (req, res) => {
         });
 });
 
+//Delete specific user
+app.delete("/api/v1/users/delete", (req, res) => {
+    const { arrayIds } = req.body;
+
+    const filter = { _id: { $in: arrayIds } };
+
+    User.deleteMany(filter)
+        .then((result) => {
+            res.status(200).json({
+                message: `Deleted ${result.deletedCount} documents`,
+            });
+        })
+        .catch((err) => {
+            res.status(500).json(err);
+        });
+});
+
 // Start the server
 
 const port = process.env.PORT || 3000;
