@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 interface LoginFormState {
     name: string;
@@ -7,7 +8,11 @@ interface LoginFormState {
     password: string;
 }
 
-const LoginForm = () => {
+interface LoginProps {
+    handleAuthentication: () => void
+}
+
+const LoginForm = ({handleAuthentication}: LoginProps ) => {
     const [formData, setFormData] = useState<LoginFormState>({
         name: "",
         email: "",
@@ -81,12 +86,12 @@ const LoginForm = () => {
                     <p className="mt-8 text-xs font-light text-center text-gray-700">
                         {" "}
                         Don't have an account?{" "}
-                        <a
-                            href="#"
+                        <Link
+                            to="/signup"
                             className="font-medium text-purple-600 hover:underline"
                         >
                             Sign up
-                        </a>
+                        </Link>
                     </p>
                 </div>
             </div>

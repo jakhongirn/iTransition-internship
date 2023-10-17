@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 interface SignUpFormState {
     name: string;
@@ -88,6 +89,16 @@ const SignUpForm = () => {
                             </button>
                         </div>
                     </form>
+                    <p className="mt-8 text-xs font-light text-center text-gray-700">
+                        {" "}
+                        Already have an account?{" "}
+                        <Link
+                            to="/login"
+                            className="font-medium text-purple-600 hover:underline"
+                        >
+                            Login
+                        </Link>
+                    </p>
                 </div>
             </div>
         </>
