@@ -18,7 +18,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={isAuthenticated ? <Navigate to="/users" /> : <LoginForm setIsAuthenticated={handleAuthentication}/>} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/users" /> : <LoginForm handleAuthentication={handleAuthentication}/>} />
         <Route path="/users" element={isAuthenticated ? <h1>Hello</h1> : <Navigate to="/login" />} />
         <Route path="/" element={isAuthenticated ? <Navigate to="/users" /> : <Navigate to="/login" />} />
         <Route path="/signup" element={<SignUpForm />}/>

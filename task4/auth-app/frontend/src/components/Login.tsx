@@ -1,6 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import Cookies from "universal-cookie";
+
+
+const cookies = new Cookies();
 
 interface LoginFormState {
     name: string;
@@ -9,10 +13,11 @@ interface LoginFormState {
 }
 
 interface LoginProps {
-    handleAuthentication: () => void
+    handleAuthentication: () => void;
 }
 
-const LoginForm = ({handleAuthentication}: LoginProps ) => {
+const LoginForm = ({ handleAuthentication }: LoginProps) => {
+    
     const [formData, setFormData] = useState<LoginFormState>({
         name: "",
         email: "",
@@ -22,22 +27,30 @@ const LoginForm = ({handleAuthentication}: LoginProps ) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: value }));
-    };
+    }
 
-    const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+    const handleSubmit = async (
+        e: React.ChangeEvent<HTMLFormElement>
+    ) => {
         e.preventDefault();
-        console.log(formData);
-
-        try {
-            const response = axios.post(
-                "http://localhost:3000/api/v1/login/",
-                formData
-            );
-            console.log(response);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+            try {
+                const response = axios.post(
+                    "http://localhost:3000/api/v1/login/",
+                    formData
+                );
+                if ((await response).status === 200) {
+                    console.log(response)
+                    cookies.set("TOKEN", (await response).data.token, {
+                        path: "/",
+                      });
+                    handleAuthentication();
+                } 
+                
+            } catch (error) {
+                console.error(error);
+            }
+        } 
+    
 
     return (
         <>
@@ -48,9 +61,7 @@ const LoginForm = ({handleAuthentication}: LoginProps ) => {
                     </h1>
                     <form className="mt-6" onSubmit={handleSubmit}>
                         <div className="mb-2">
-                            <label
-                                className="block text-sm font-semibold text-gray-800"
-                            >
+                            <label className="block text-sm font-semibold text-gray-800">
                                 Email
                             </label>
                             <input
@@ -62,9 +73,7 @@ const LoginForm = ({handleAuthentication}: LoginProps ) => {
                             />
                         </div>
                         <div className="mb-2">
-                            <label
-                                className="block text-sm font-semibold text-gray-800"
-                            >
+                            <label className="block text-sm font-semibold text-gray-800">
                                 Password
                             </label>
                             <input
@@ -75,9 +84,12 @@ const LoginForm = ({handleAuthentication}: LoginProps ) => {
                                 className="block w-full px-4 py-2 mt-2 text-purple-700 bg-white border rounded-md focus:border-purple-400 focus:ring-purple-300 focus:outline-none focus:ring focus:ring-opacity-40"
                             />
                         </div>
-                        
+
                         <div className="mt-6">
-                            <button type="submit" className="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-purple-700 rounded-md hover:bg-purple-600 focus:outline-none focus:bg-purple-600">
+                            <button
+                                type="submit"
+                                className="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-purple-700 rounded-md hover:bg-purple-600 focus:outline-none focus:bg-purple-600"
+                            >
                                 Login
                             </button>
                         </div>
@@ -95,7 +107,6 @@ const LoginForm = ({handleAuthentication}: LoginProps ) => {
                     </p>
                 </div>
             </div>
-            
         </>
     );
 };
