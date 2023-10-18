@@ -45,6 +45,12 @@ const LoginForm = () => {
                     cookies.set("TOKEN", (await response).data.token, {
                         path: "/",
                       });
+                    cookies.set("name", (await response).data.name, {
+                        path: "/",
+                    })
+                    cookies.set("userId", (await response).data.userId, {
+                        path: "/",
+                    })
                     navigate("/users")
                 } 
                 else {

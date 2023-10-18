@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface SignUpFormState {
     name: string;
@@ -14,6 +15,8 @@ const SignUpForm = () => {
         email: "",
         password: "",
     });
+
+    const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -30,6 +33,8 @@ const SignUpForm = () => {
                 formData
             );
             console.log(response);
+            navigate('/login')
+
         } catch (error) {
             console.error(error);
         }

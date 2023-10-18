@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"; // Import useState
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { Navigate, useNavigate } from "react-router";
+import moment from "moment";
 
 const cookies = new Cookies();
 
@@ -35,6 +36,11 @@ const UsersManagement = () => {
         return result.data;
     };
 
+    const formatDateTime = (dateString: string) => {
+        const date = moment(dateString);
+        return date.format("HH:mm:ss, D MMM, YYYY");
+    };
+
     useEffect(() => {
         const token = cookies.get("TOKEN"); // Retrieve the token inside useEffect
         if (!token) {
@@ -55,8 +61,11 @@ const UsersManagement = () => {
             .then((result) => {
                 // Get user data from the API response
                 const userData = result.data;
-                console.log(userData);
-                setUsers(userData); // Update the state with user data
+                const formattedUsers = userData.map((user) => ({
+                    ...user,
+                    lastLoginTime: formatDateTime(user.lastLoginTime),
+                }));
+                setUsers(formattedUsers); // Update the state with user data
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
@@ -76,6 +85,12 @@ const UsersManagement = () => {
     if (!authenticated) {
         return <Navigate to="/login" />;
     }
+
+    //handle logout
+    const handleLogout = () => {
+        cookies.remove("TOKEN");
+        navigate("/login");
+    };
 
     //handle checkbox changes
 
@@ -117,12 +132,16 @@ const UsersManagement = () => {
             setUsers(updatedUserList);
 
             // Clear the selectedUserIds
-            
 
             // You can also display a success message if needed
         } catch (error) {
             // Handle error
             console.error("Error: ", error);
+        }
+        //Checks whether in selected users has logged user itself and if it is it clears the token
+        const userId = cookies.get("userId");
+        if (selectedUserIds.includes(userId)) {
+            handleLogout();
         }
     };
 
@@ -146,69 +165,77 @@ const UsersManagement = () => {
         try {
             const token = cookies.get("TOKEN");
 
-        const configuration = {
-            method: "delete",
-            url: "http://localhost:3000/api/v1/users/delete",
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            data: {
-                arrayIds: selectedUserIds, // Pass the selected user IDs as data
-            },
-        };
+            const configuration = {
+                method: "delete",
+                url: "http://localhost:3000/api/v1/users/delete",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                data: {
+                    arrayIds: selectedUserIds, // Pass the selected user IDs as data
+                },
+            };
 
-        await axios(configuration);
+            await axios(configuration);
 
-        // Fetch the updated user list after successful block
-        const updatedUserList = await fetchUsers();
+            // Fetch the updated user list after successful block
+            const updatedUserList = await fetchUsers();
 
-        // Update the UI by setting the user list state with the updated list
-        setUsers(updatedUserList);
+            // Update the UI by setting the user list state with the updated list
+            setUsers(updatedUserList);
 
-        // Clear the selectedUserIds
-        setSelectedUserIds([]);
+            //Checks whether in selected users has logged user itself and if it is it clears the token
+            const userId = cookies.get("userId");
+            if (selectedUserIds.includes(userId)) {
+                handleLogout();
+            }
+
+            // Clear the selectedUserIds
+            setSelectedUserIds([]);
         } catch (err) {
-            console.error("Error ", err)
+            console.error("Error ", err);
         }
     };
 
-    const handleLogout = () => {
-        cookies.remove('TOKEN')
-        navigate('/login')
-    }
+    //get login name from the cookie
+    const userName = cookies.get("name");
 
     return (
         <div className="container mx-auto p-4">
             <h2 className="text-2xl font-bold mb-4 text-center">
                 User Management
             </h2>
-
-            <div className="flex justify-between">
-                <div>
-                    <button
-                        onClick={handleBlockUsers}
-                        className="focus:outline-none text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:focus:ring-yellow-900"
-                    >
-                        Block
-                    </button>
-                    <button
-                        onClick={handleUnblockUsers}
-                        className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 "
-                    >
-                        Unblock
-                    </button>
-                    <button
-                        onClick={handleDeleteUsers}
-                        className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-                    >
-                        Delete
-                    </button>
-                </div>
-                <div>
-                    <button onClick={handleLogout} className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
-                        Logout
-                    </button>
-                </div>
+            <div className="flex justify-end gap-x-4 my-4 items-center">
+                <h1 className="text-lg">
+                    Welcome, <span className="text-purple-600">{userName}</span>
+                </h1>
+                |
+                <button
+                    onClick={handleLogout}
+                    className="text-lg underline text-blue-500 hover:text-blue-400"
+                >
+                    Logout
+                </button>
+            </div>
+            <div className="flex my-2">
+                <button
+                    onClick={handleBlockUsers}
+                    className="focus:outline-none text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:focus:ring-yellow-900"
+                >
+                    Block
+                </button>
+                <button
+                    onClick={handleUnblockUsers}
+                    className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 "
+                >
+                    Unblock
+                </button>
+                <button
+                    onClick={handleDeleteUsers}
+                    className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                >
+                    Delete
+                </button>
             </div>
             <div className="bg-white rounded-lg shadow overflow-x-auto">
                 <table className="min-w-full">
@@ -239,7 +266,9 @@ const UsersManagement = () => {
                                     <input
                                         type="checkbox"
                                         value={user._id}
-                                        checked={selectedUserIds.includes(user._id)}
+                                        checked={selectedUserIds.includes(
+                                            user._id
+                                        )}
                                         // You can store the selected user IDs in a state
                                         onChange={(e) =>
                                             handleCheckboxChange(e.target.value)
@@ -258,7 +287,13 @@ const UsersManagement = () => {
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     {user.registeredAt}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
+                                <td
+                                    className={`${
+                                        user.status
+                                            ? "text-green-500"
+                                            : "text-red-500"
+                                    } px-6 py-4 whitespace-nowrap`}
+                                >
                                     {user.status ? "Active" : "Blocked"}
                                 </td>
                             </tr>

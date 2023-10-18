@@ -117,6 +117,7 @@ app.post("/api/v1/login", async (req, res) => {
                 );
 
                 res.status(200).send({
+                    userId: user._id,
                     message: "Login successful!",
                     email: user.email,
                     name: user.name,
