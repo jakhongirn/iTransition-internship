@@ -87,6 +87,7 @@ const UsersManagement = () => {
         }
     };
 
+    // Update the users status (blocks or unblocks depending on the argument)
     const updateUsersStatus = async (statusUser: boolean) => {
         if (selectedUserIds.length === 0) {
             return;
@@ -116,7 +117,7 @@ const UsersManagement = () => {
             setUsers(updatedUserList);
 
             // Clear the selectedUserIds
-            setSelectedUserIds([]);
+            
 
             // You can also display a success message if needed
         } catch (error) {
@@ -127,10 +128,12 @@ const UsersManagement = () => {
 
     const handleBlockUsers = async () => {
         updateUsersStatus(false);
+        setSelectedUserIds([]);
     };
 
     const handleUnblockUsers = () => {
         updateUsersStatus(true);
+        setSelectedUserIds([]);
     };
     const handleDeleteUsers = async () => {
         // Check if there are selected users
@@ -236,6 +239,7 @@ const UsersManagement = () => {
                                     <input
                                         type="checkbox"
                                         value={user._id}
+                                        checked={selectedUserIds.includes(user._id)}
                                         // You can store the selected user IDs in a state
                                         onChange={(e) =>
                                             handleCheckboxChange(e.target.value)
