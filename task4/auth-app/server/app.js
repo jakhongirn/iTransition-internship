@@ -93,9 +93,15 @@ app.post("/api/v1/login", async (req, res) => {
         .then((user) => {
             bcrypt.compare(password, user.password).then((passwordCheck) => {
                 if (!passwordCheck) {
-                    return res.status(400).send({
+                    return res.status(202).send({
                         message: "Password doesn't match",
                     });
+                }
+
+                if (user.status == false) {
+                    return res.status(203).send({
+                        message: "User has been blocked. Try to login with another account"
+                    })
                 }
 
                 //Keeps the datetime of last login
@@ -165,7 +171,7 @@ app.post("/api/v1/users/updateMany/", auth, (req, res) => {
 
     User.bulkWrite(updates)
         .then((result) => {
-            res.status(301).json({
+            res.status(200).json({
                 message: `Updated ${result.modifiedCount} documents.`,
             });
         })

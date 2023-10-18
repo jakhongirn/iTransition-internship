@@ -17,6 +17,8 @@ interface LoginFormState {
 const LoginForm = () => {
     const navigate = useNavigate()
 
+    const [errorLogin, setErrorLogin] = useState("");
+
     const [formData, setFormData] = useState<LoginFormState>({
         name: "",
         email: "",
@@ -37,6 +39,7 @@ const LoginForm = () => {
                     "http://localhost:3000/api/v1/login/",
                     formData
                 );
+                console.log(await response)
                 if ((await response).status === 200) {
                     console.log(response)
                     cookies.set("TOKEN", (await response).data.token, {
@@ -44,9 +47,13 @@ const LoginForm = () => {
                       });
                     navigate("/users")
                 } 
+                else {
+                    setErrorLogin((await response).data.message)
+                }
                 
             } catch (error) {
                 console.error(error);
+                
             }
         } 
     
@@ -92,6 +99,8 @@ const LoginForm = () => {
                                 Login
                             </button>
                         </div>
+
+                        <p className="mt-4 text-center text-red-500 font-semibold">{errorLogin}</p>
                     </form>
 
                     <p className="mt-8 text-xs font-light text-center text-gray-700">
