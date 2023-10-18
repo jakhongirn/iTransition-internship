@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Cookies from "universal-cookie";
+import { useNavigate } from "react-router-dom";
 
 
 const cookies = new Cookies();
@@ -12,12 +13,10 @@ interface LoginFormState {
     password: string;
 }
 
-interface LoginProps {
-    handleAuthentication: () => void;
-}
 
-const LoginForm = ({ handleAuthentication }: LoginProps) => {
-    
+const LoginForm = () => {
+    const navigate = useNavigate()
+
     const [formData, setFormData] = useState<LoginFormState>({
         name: "",
         email: "",
@@ -43,7 +42,7 @@ const LoginForm = ({ handleAuthentication }: LoginProps) => {
                     cookies.set("TOKEN", (await response).data.token, {
                         path: "/",
                       });
-                    handleAuthentication();
+                    navigate("/users")
                 } 
                 
             } catch (error) {
