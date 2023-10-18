@@ -61,7 +61,7 @@ const UsersManagement = () => {
             .then((result) => {
                 // Get user data from the API response
                 const userData = result.data;
-                const formattedUsers = userData.map((user) => ({
+                const formattedUsers = userData.map((user:User) => ({
                     ...user,
                     lastLoginTime: formatDateTime(user.lastLoginTime),
                 }));
