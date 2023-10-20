@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
+
 interface SignUpFormState {
     name: string;
     email: string;
@@ -29,7 +30,7 @@ const SignUpForm = () => {
 
         try {
             const response = axios.post(
-                "http://localhost:3000/api/v1/signup/",
+                "https://user-management-10tg.onrender.com/api/v1/signup/",
                 formData
             );
             console.log(response);

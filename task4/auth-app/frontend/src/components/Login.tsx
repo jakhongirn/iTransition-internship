@@ -36,7 +36,7 @@ const LoginForm = () => {
         e.preventDefault();
             try {
                 const response = axios.post(
-                    "http://localhost:3000/api/v1/login/",
+                    "https://user-management-10tg.onrender.com/api/v1/login/",
                     formData
                 );
                 console.log(await response)

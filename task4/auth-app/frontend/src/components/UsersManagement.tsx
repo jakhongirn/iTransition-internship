@@ -27,7 +27,7 @@ const UsersManagement = () => {
         const token = cookies.get("TOKEN");
         const configuration = {
             method: "get",
-            url: "http://localhost:3000/api/v1/users",
+            url: "https://user-management-10tg.onrender.com/api/v1/users/",
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -50,7 +50,7 @@ const UsersManagement = () => {
         // Set configurations for the API call
         const configuration = {
             method: "get",
-            url: "http://localhost:3000/api/v1/users",
+            url: "https://user-management-10tg.onrender.com/api/v1/users/",
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -113,7 +113,7 @@ const UsersManagement = () => {
 
             const configuration = {
                 method: "post", // Use Post request
-                url: "http://localhost:3000/api/v1/users/updateMany/",
+                url: "https://user-management-10tg.onrender.com/api/v1/users/updateMany/",
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -167,7 +167,7 @@ const UsersManagement = () => {
 
             const configuration = {
                 method: "delete",
-                url: "http://localhost:3000/api/v1/users/delete",
+                url: "https://user-management-10tg.onrender.com/api/v1/users/delete",
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
