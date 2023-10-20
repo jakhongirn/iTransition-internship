@@ -22,6 +22,7 @@ const UsersManagement = () => {
     const [authenticated, setAuthenticated] = useState(true);
     const [invalidToken, setInvalidToken] = useState(false);
     const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+    const [selectAll, setSelectAll] = useState(false);
 
     // Function to fetch the user list
     const fetchUsers = async () => {
@@ -40,6 +41,16 @@ const UsersManagement = () => {
     const formatDateTime = (dateString: string) => {
         const date = moment(dateString);
         return date.format("HH:mm:ss, D MMM, YYYY");
+    };
+
+    const toggleSelectAll = () => {
+        if (selectAll) {
+            setSelectedUserIds([]);
+        } else {
+            const allUserIds = users.map((user) => user._id);
+            setSelectedUserIds(allUserIds);
+        }
+        setSelectAll(!selectAll);
     };
 
     useEffect(() => {
@@ -135,21 +146,28 @@ const UsersManagement = () => {
             // Handle error
             console.error("Error: ", error);
         }
+        
+        
+    };
+
+    const handleBlockUsers = async () => {
+        updateUsersStatus(false);
+
         //Checks whether in selected users has logged user itself and if it is it clears the token
         const userId = cookies.get("userId");
         if (selectedUserIds.includes(userId)) {
             handleLogout();
         }
-    };
 
-    const handleBlockUsers = async () => {
-        updateUsersStatus(false);
         setSelectedUserIds([]);
+        setSelectAll(false);
     };
 
     const handleUnblockUsers = () => {
         updateUsersStatus(true);
         setSelectedUserIds([]);
+        setSelectAll(false);
+        
     };
     const handleDeleteUsers = async () => {
         // Check if there are selected users
@@ -189,6 +207,8 @@ const UsersManagement = () => {
 
             // Clear the selectedUserIds
             setSelectedUserIds([]);
+            
+            
         } catch (err) {
             console.error("Error ", err);
         }
@@ -238,7 +258,13 @@ const UsersManagement = () => {
                 <table className="min-w-full">
                     <thead>
                         <tr>
-                            <th></th>
+                            <th className="pr-4 py-4 whitespace-nowrap">
+                                <input
+                                    type="checkbox"
+                                    onChange={toggleSelectAll}
+                                    checked={selectAll}
+                                />
+                            </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Name
                             </th>
