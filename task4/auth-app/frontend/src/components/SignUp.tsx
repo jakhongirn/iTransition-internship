@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
+export const SERVER_URL = "https://user-management-10tg.onrender.com"
 
 interface SignUpFormState {
     name: string;
@@ -30,7 +31,7 @@ const SignUpForm = () => {
 
         try {
             const response = axios.post(
-                "https://user-management-10tg.onrender.com/api/v1/signup/",
+                `${SERVER_URL}/api/v1/signup/`,
                 formData
             );
             console.log(response);

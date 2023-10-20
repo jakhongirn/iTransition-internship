@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
+import { SERVER_URL } from "./SignUp";
 
 
 const cookies = new Cookies();
@@ -36,7 +37,7 @@ const LoginForm = () => {
         e.preventDefault();
             try {
                 const response = axios.post(
-                    "https://user-management-10tg.onrender.com/api/v1/login/",
+                    `${SERVER_URL}/api/v1/login/`,
                     formData
                 );
                 console.log(await response)

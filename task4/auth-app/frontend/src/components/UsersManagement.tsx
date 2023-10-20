@@ -3,6 +3,7 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import { Navigate, useNavigate } from "react-router";
 import moment from "moment";
+import { SERVER_URL } from "./SignUp";
 
 const cookies = new Cookies();
 
@@ -27,7 +28,7 @@ const UsersManagement = () => {
         const token = cookies.get("TOKEN");
         const configuration = {
             method: "get",
-            url: "https://user-management-10tg.onrender.com/api/v1/users/",
+            url: `${SERVER_URL}/api/v1/users/`,
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -50,7 +51,7 @@ const UsersManagement = () => {
         // Set configurations for the API call
         const configuration = {
             method: "get",
-            url: "https://user-management-10tg.onrender.com/api/v1/users/",
+            url: `${SERVER_URL}/api/v1/users/`,
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -61,11 +62,7 @@ const UsersManagement = () => {
             .then((result) => {
                 // Get user data from the API response
                 const userData = result.data;
-                const formattedUsers = userData.map((user:User) => ({
-                    ...user,
-                    lastLoginTime: formatDateTime(user.lastLoginTime),
-                }));
-                setUsers(formattedUsers); // Update the state with user data
+                setUsers(userData); // Update the state with user data
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
@@ -113,7 +110,7 @@ const UsersManagement = () => {
 
             const configuration = {
                 method: "post", // Use Post request
-                url: "https://user-management-10tg.onrender.com/api/v1/users/updateMany/",
+                url: `${SERVER_URL}/api/v1/users/updateMany/`,
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -167,7 +164,7 @@ const UsersManagement = () => {
 
             const configuration = {
                 method: "delete",
-                url: "https://user-management-10tg.onrender.com/api/v1/users/delete",
+                url: `${SERVER_URL}/api/v1/users/delete/`,
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -282,10 +279,10 @@ const UsersManagement = () => {
                                     {user.email}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    {user.lastLoginTime}
+                                    {formatDateTime(user.lastLoginTime)}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    {user.registeredAt}
+                                    {formatDateTime(user.registeredAt)}
                                 </td>
                                 <td
                                     className={`${
